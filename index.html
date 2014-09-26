@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>analog palette</title>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.11.1/jquery-ui.min.js"></script>
+<script>
+  /*
+     init()
+     - body が Load されたときに実行される
+     - クリックイベントを監視
+        - クリックされた位置の canvas の RGB 値を取得し、console.log で表示する
+  */
+  function init() {
+    var canvas = document.getElementById("can");
+    var ctx = document.getElementById("can").getContext("2d");
+    canvas.addEventListener('click', onClick, false);
+    function onClick(e) {
+      var x = e.clientX - canvas.offsetLeft;
+      var y = e.clientY - canvas.offsetTop;
+      console.log("x = " + x + ", y = " + y);
+      var getRGB = ctx.getImageData(x, y, 1, 1);
+      console.log("R: " + getRGB.data[0] + ", G: " + getRGB.data[1] + ", B: " + getRGB.data[2]);
+    };
+  };
+
+  /*
+     addRedSquare()
+     - canvas 内に赤い (RGB: 255, 0, 0) 四角を追加
+  */
+  function addRedSquare() {
+    console.log("Add RedSquare clicked!");
+    var ctx = document.getElementById("can").getContext("2d");
+    ctx.globalCompositeOperation = "lighter";
+    ctx.fillStyle = "red";
+    ctx.fillRect(75, 75, 100, 100);
+  };
+
+  /*
+     addBlueSquare()
+     - canvas 内に青い (RGB: 0, 0, 255) 四角を追加
+  */
+  function addBlueSquare() {
+    console.log("Add BlueSquare clicked!");
+    var ctx = document.getElementById("can").getContext("2d");
+    ctx.globalCompositeOperation = "lighter";
+    ctx.fillStyle = "blue";
+    ctx.fillRect(25, 25, 100, 100);
+  };
+</script>
+</head>
+<body onload="init()">
+  <button type="button" onclick="addRedSquare()">Add RedSquare</button>
+  <button type="button" onclick="addBlueSquare()">Add BlueSquare</button>
+  <canvas id="can" width="600" height="400" style="border: 1px solid"></canvas>
+</body>
+</html>
