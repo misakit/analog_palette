@@ -5,23 +5,76 @@
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.11.1/jquery-ui.min.js"></script>
 <script>
+  var drawingFlag = false;
   /*
      init()
      - body が Load されたときに実行される
      - クリックイベントを監視
-        - クリックされた位置の canvas の RGB 値を取得し、console.log で表示する
-  */
+   */
   function init() {
     var canvas = document.getElementById("can");
     var ctx = document.getElementById("can").getContext("2d");
+    ctx.globalCompositeOperation = "lighter";
+    ctx.strokeStyle = 'rgba(255, 0, 0, 1)';
+    ctx.lineWidth = 10;
     canvas.addEventListener('click', onClick, false);
-    function onClick(e) {
-      var x = e.clientX - canvas.offsetLeft;
-      var y = e.clientY - canvas.offsetTop;
-      console.log("x = " + x + ", y = " + y);
-      var getRGB = ctx.getImageData(x, y, 1, 1);
-      console.log("R: " + getRGB.data[0] + ", G: " + getRGB.data[1] + ", B: " + getRGB.data[2]);
-    };
+    canvas.addEventListener('mousedown', drawStart, false);
+    canvas.addEventListener('mousemove', drawMove, false);
+    window.addEventListener('mouseup', drawStop, false);
+  };
+
+  /*
+     onClick()
+     - クリックされた位置の canvas の RGB 値を取得し、console.log で表示
+   */
+  function onClick(e) {
+    var canvas = document.getElementById("can");
+    var ctx = document.getElementById("can").getContext("2d");
+    ctx.globalCompositeOperation = "lighter";
+    var x = e.clientX - canvas.offsetLeft;
+    var y = e.clientY - canvas.offsetTop;
+    console.log("x = " + x + ", y = " + y);
+    var getRGB = ctx.getImageData(x, y, 1, 1);
+    console.log("R: " + getRGB.data[0] + ", G: " + getRGB.data[1] + ", B: " + getRGB.data[2]);
+    var color = "rgba(" + getRGB.data[0] + ", " + getRGB.data[1] + ", "  + getRGB.data[2] + ", 1)";
+    ctx.strokeStyle = color;
+    console.log(color);
+  };
+
+  /*
+     drawStart()
+   */
+  function drawStart(e) {
+    var canvas = document.getElementById("can");
+    var ctx = document.getElementById("can").getContext("2d");
+    ctx.globalCompositeOperation = "lighter";
+    ctx.beginPath();
+    ctx.moveTo(e.clientX - canvas.offsetLeft, e.clientY - canvas.offsetTop);
+    drawingFlag = true;
+  };
+
+  /*
+     drawMove()
+   */
+  function drawMove(e) {
+    if (!drawingFlag) return;
+
+    var canvas = document.getElementById("can");
+    var ctx = document.getElementById("can").getContext("2d");
+    ctx.globalCompositeOperation = "lighter";
+    ctx.lineTo(e.clientX - canvas.offsetLeft, e.clientY - canvas.offsetTop);
+    ctx.stroke();
+  };
+
+  /*
+     drawStop()
+   */
+  function drawStop() {
+    if (!drawingFlag) return;
+    var ctx = document.getElementById("can").getContext("2d");
+    ctx.globalCompositeOperation = "lighter";
+    ctx.closePath();
+    drawingFlag = false;
   };
 
   /*
@@ -47,11 +100,24 @@
     ctx.fillStyle = "blue";
     ctx.fillRect(25, 25, 100, 100);
   };
+
+  /*
+     addYellowSquare()
+     - canvas 内に黄色 (RGB: 255, 255, 0) 四角を追加
+  */
+  function addYellowSquare() {
+    console.log("Add YellowSquare clicked!");
+    var ctx = document.getElementById("can").getContext("2d");
+    ctx.globalCompositeOperation = "lighter";
+    ctx.fillStyle = "yellow";
+    ctx.fillRect(105, 25, 100, 100);
+  };
 </script>
 </head>
 <body onload="init()">
   <button type="button" onclick="addRedSquare()">Add RedSquare</button>
   <button type="button" onclick="addBlueSquare()">Add BlueSquare</button>
+  <button type="button" onclick="addYellowSquare()">Add YellowSquare</button>
   <canvas id="can" width="600" height="400" style="border: 1px solid"></canvas>
 </body>
 </html>
